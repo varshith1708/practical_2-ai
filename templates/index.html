@@ -1,502 +1,277 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NLP-Based Text Classification and Explainable AI Demo</title>
-  
-  <!-- Inter Font & CSS -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  
-  <!-- Chart.js CDN for visualizations -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDLS - 800L Water Tank Digital Level System & Alert Dashboard</title>
+    <meta name="description" content="Digital Data Level System (DDLS) demo with an 800L water tank, 4 division markers (200, 400, 600, 800 Ltrs), customizable alert threshold, and real-time animation.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-  <div class="app-container">
-    
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-brand-icon">🤖</div>
-        <div>
-          <h2>AI Practical Demo</h2>
-          <p>NLP & Explainable AI</p>
-        </div>
-      </div>
-      
-      <ul class="sidebar-menu">
-        <li><a href="#dashboard" class="active"><span class="menu-icon">📊</span> Dashboard</a></li>
-        <li><a href="#classification"><span class="menu-icon">📝</span> Text Classification</a></li>
-        <li><a href="#nlp-processing"><span class="menu-icon">🔤</span> NLP Processing</a></li>
-        <li><a href="#tfidf-features"><span class="menu-icon">📈</span> TF-IDF Features</a></li>
-        <li><a href="#classifier-comparison"><span class="menu-icon">⚖️</span> Classifier Comparison</a></li>
-        <li><a href="#explainability"><span class="menu-icon">🔍</span> Explainability (XAI)</a></li>
-        <li><a href="#ai-ethics"><span class="menu-icon">🛡️</span> AI Ethics</a></li>
-        <li><a href="#how-it-works"><span class="menu-icon">⚙️</span> How It Works</a></li>
-        <li><a href="#model-info"><span class="menu-icon">ℹ️</span> Model Information</a></li>
-        <li><a href="#about-project"><span class="menu-icon">📖</span> About Project</a></li>
-      </ul>
-      
-      <div class="sidebar-footer">
-        College Practical Demo &bull; Antigravity AI
-      </div>
-    </aside>
-    
-    <!-- Main Content Area -->
-    <div class="main-wrapper">
-      
-      <!-- Sticky Top Header -->
-      <header class="top-header">
-        <div>
-          <h1>NLP-Based Text Classification & Explainable AI</h1>
-          <p>Real Machine Learning sentiment prediction pipeline with feature attribution</p>
-        </div>
-        <div class="header-badges">
-          <span class="tech-badge">Python</span>
-          <span class="tech-badge">scikit-learn</span>
-          <span class="tech-badge">TF-IDF</span>
-          <span class="tech-badge">Flask</span>
-        </div>
-      </header>
-      
-      <main class="main-content">
-        
-        <!-- Error Alert Banner -->
-        <div id="error-alert" class="alert alert-danger" style="display: none;">
-          <span>⚠️</span>
-          <span class="alert-message">Error message goes here.</span>
-        </div>
-        
-        <!-- Section 1: Dashboard / Main Text Input -->
-        <section id="dashboard" class="section-block">
-          
-          <!-- Preset Demo Examples -->
-          <div class="card">
-            <div class="card-title">
-              <span>💡 Clickable Demo Examples</span>
-              <span style="font-size: 12px; font-weight: normal; color: var(--text-muted);">Select an example to populate text input</span>
-            </div>
-            <div class="demo-examples-container">
-              <button class="demo-btn" data-text="I absolutely love this product. It is amazing!">1. "I absolutely love this product. It is amazing!"</button>
-              <button class="demo-btn" data-text="The service was terrible and very disappointing.">2. "The service was terrible and very disappointing."</button>
-              <button class="demo-btn" data-text="The package arrived this morning.">3. "The package arrived this morning."</button>
-              <button class="demo-btn" data-text="This application is excellent and easy to use.">4. "This application is excellent and easy to use."</button>
-              <button class="demo-btn" data-text="The experience was horrible and frustrating.">5. "The experience was horrible and frustrating."</button>
-            </div>
-          </div>
-          
-          <!-- Text Input Form & Selected Classifier -->
-          <div id="classification" class="card">
-            <div class="card-title">
-              <span>📝 Main Prediction Input</span>
-            </div>
-            
-            <div class="form-group">
-              <label for="text-input" class="form-label">Enter Sentence for Sentiment Analysis:</label>
-              <textarea id="text-input" class="text-area-input" placeholder="Type or paste any sentence here to analyze its sentiment..."></textarea>
-              <div id="char-counter" style="text-align: right; font-size: 12px; color: var(--text-muted); margin-top: 4px;">0 / 1000 characters</div>
-            </div>
-            
-            <div class="form-row">
-              <div style="flex-grow: 1;">
-                <label for="classifier-select" class="form-label">Select Classifier Model:</label>
-                <select id="classifier-select" class="select-control" style="width: 100%;">
-                  <option value="Logistic Regression" selected>Logistic Regression</option>
-                  <option value="Multinomial Naive Bayes">Multinomial Naive Bayes</option>
-                  <option value="Linear SVM">Linear SVM (Support Vector Machine)</option>
-                </select>
-              </div>
-            </div>
-            
-            <div class="action-buttons">
-              <button id="classify-btn" class="btn btn-primary">⚡ Classify Text</button>
-              <button id="compare-btn" class="btn btn-secondary">⚖️ Compare Classifiers</button>
-              <button id="clear-btn" class="btn btn-outline">🗑️ Clear</button>
-            </div>
-          </div>
-          
-          <!-- Side-by-Side Comparison Container (Hidden by default) -->
-          <div id="compare-results-card" class="card" style="display: none; background-color: #f8fafc;">
-            <div class="card-title">
-              <span>⚖️ Side-by-Side Classifier Comparison Results</span>
-            </div>
-            <div id="compare-text-quote" style="font-style: italic; color: var(--text-muted); margin-bottom: 16px;"></div>
-            <div id="compare-cards-container" class="grid-3">
-              <!-- Comparison cards dynamically injected here -->
-            </div>
-          </div>
-          
-          <!-- Main Prediction Badge & Confidence Card -->
-          <div class="grid-2">
-            <div class="card">
-              <div class="card-title">PREDICTION</div>
-              <div class="prediction-box">
-                <span id="prediction-badge" class="badge-label badge-positive">Positive</span>
-                <div id="prediction-confidence" class="confidence-score">92.5%</div>
-                <div class="confidence-caption">Model Confidence</div>
-                <div id="prediction-model" style="font-size: 13px; font-weight: 600; margin-top: 8px; color: var(--primary);">
-                  Logistic Regression
+    <div class="app-wrapper">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-group">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+                    </svg>
                 </div>
-              </div>
-            </div>
-            
-            <!-- Class Probabilities Card -->
-            <div class="card">
-              <div class="card-title">
-                <span>Confidence / Probabilities</span>
-                <span id="prob-type-notice" style="font-size: 11px; color: var(--text-muted); font-weight: normal;">Native Probability</span>
-              </div>
-              
-              <div class="prob-item">
-                <div class="prob-label">
-                  <span>Positive Sentiment</span>
-                  <span id="prob-val-pos">0%</span>
+                <div>
+                    <h1>DDLS - Digital Data Level System</h1>
+                    <p class="subtitle">800L Industrial Liquid Tank Monitoring & Automated Alert Controller</p>
                 </div>
-                <div class="progress-track">
-                  <div id="prob-bar-pos" class="progress-fill fill-positive" style="width: 0%;"></div>
+            </div>
+            <div class="header-status">
+                <div id="connectionBadge" class="badge badge-success">
+                    <span class="pulse-dot"></span> System Live
                 </div>
-              </div>
-              
-              <div class="prob-item">
-                <div class="prob-label">
-                  <span>Neutral Sentiment</span>
-                  <span id="prob-val-neu">0%</span>
-                </div>
-                <div class="progress-track">
-                  <div id="prob-bar-neu" class="progress-fill fill-neutral" style="width: 0%;"></div>
-                </div>
-              </div>
-              
-              <div class="prob-item">
-                <div class="prob-label">
-                  <span>Negative Sentiment</span>
-                  <span id="prob-val-neg">0%</span>
-                </div>
-                <div class="progress-track">
-                  <div id="prob-bar-neg" class="progress-fill fill-negative" style="width: 0%;"></div>
-                </div>
-              </div>
+                <div class="time-display" id="clockDisplay">00:00:00</div>
             </div>
-          </div>
-        </section>
-        
-        <!-- Section 2: NLP Processing Pipeline -->
-        <section id="nlp-processing" class="section-block">
-          <div class="section-header">
-            <h2>🔤 NLP Processing Pipeline</h2>
-            <p>Step-by-step transformation of actual user text in the preprocessing pipeline</p>
-          </div>
-          
-          <div class="card">
-            <div class="pipeline-container">
-              <div class="pipeline-step">
-                <div class="pipeline-step-header">1. Original Text</div>
-                <div id="nlp-original" class="pipeline-step-content">—</div>
-              </div>
-              
-              <div class="pipeline-arrow">↓</div>
-              
-              <div class="pipeline-step">
-                <div class="pipeline-step-header">2. Cleaned Text (Lowercased & Punctuation Removed)</div>
-                <div id="nlp-cleaned" class="pipeline-step-content">—</div>
-              </div>
-              
-              <div class="pipeline-arrow">↓</div>
-              
-              <div class="pipeline-step">
-                <div class="pipeline-step-header">3. Tokens (Word Tokenization)</div>
-                <div id="nlp-tokens" class="token-chip-container">—</div>
-              </div>
-              
-              <div class="pipeline-arrow">↓</div>
-              
-              <div class="pipeline-step">
-                <div class="pipeline-step-header">4. Processed Text (Stop-words Removed & Stemmed)</div>
-                <div id="nlp-processed" class="pipeline-step-content">—</div>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        <!-- Section 3: TF-IDF Feature Extraction -->
-        <section id="tfidf-features" class="section-block">
-          <div class="section-header">
-            <h2>📈 Feature Extraction – TF-IDF</h2>
-            <p>TF-IDF converts text into numerical features based on how important each word is within the dataset.</p>
-          </div>
-          
-          <div class="grid-2">
-            <div class="card">
-              <div class="card-title">Important Words & TF-IDF Scores</div>
-              <div class="table-responsive">
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>Term / N-gram</th>
-                      <th>TF-IDF Score</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tfidf-table-body">
-                    <tr><td colspan="2" class="text-muted">Enter text above to extract TF-IDF features.</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            
-            <div class="card">
-              <div class="card-title">TF-IDF Visualization</div>
-              <div class="chart-box">
-                <canvas id="tfidf-chart"></canvas>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        <!-- Section 4 & 5: Machine Learning Classifiers & Classifier Comparison -->
-        <section id="classifier-comparison" class="section-block">
-          <div class="section-header">
-            <h2>⚖️ Classifier Comparison Benchmark</h2>
-            <p>Real evaluation metrics calculated on the 20% test dataset split</p>
-          </div>
-          
-          <div class="card">
-            <div class="table-responsive">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Classifier</th>
-                    <th>Accuracy</th>
-                    <th>Precision (Macro)</th>
-                    <th>Recall (Macro)</th>
-                    <th>F1 Score (Macro)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for name, metrics in model_info.classifier_metrics.items() %}
-                  <tr>
-                    <td><strong>{{ name }}</strong></td>
-                    <td><span class="tech-badge" style="background:#dbeafe; color:#1e40af;">{{ (metrics.accuracy * 100) | round(2) }}%</span></td>
-                    <td>{{ (metrics.precision * 100) | round(2) }}%</td>
-                    <td>{{ (metrics.recall * 100) | round(2) }}%</td>
-                    <td><strong>{{ (metrics.f1_score * 100) | round(2) }}%</strong></td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-        
-        <!-- Section 8 & 9: Explainable AI (XAI) -->
-        <section id="explainability" class="section-block">
-          <div class="section-header">
-            <h2>🔍 Explainable AI (XAI) – Why did the AI make this prediction?</h2>
-            <p>Feature contribution weights derived directly from the trained machine learning model coefficients</p>
-          </div>
-          
-          <div class="card">
-            <div class="card-title">Highlighted Sentence Tokens</div>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
-              Green = Positive contributing word &bull; Red = Negative contributing word &bull; Grey = Neutral / Stop-word
-            </p>
-            <div id="highlighted-sentence-box" class="sentence-highlight-box">
-              Enter text and click Classify to see highlighted word tokens.
-            </div>
-          </div>
-          
-          <div class="grid-2">
-            <div class="card">
-              <div class="card-title">Dynamic Explanation Summary</div>
-              <div id="human-explanation-text" style="font-size: 15px; line-height: 1.6; color: var(--text-main);">
-                Classification explanation will be dynamically generated based on model feature attribution weights.
-              </div>
-            </div>
-            
-            <div class="card">
-              <div class="card-title">Word Contribution Impact Weights</div>
-              <div class="chart-box">
-                <canvas id="xai-chart"></canvas>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        <!-- Section 10: AI Ethics & Responsible AI -->
-        <section id="ai-ethics" class="section-block">
-          <div class="section-header">
-            <h2>🛡️ AI Ethics & Responsible AI</h2>
-            <p>Essential ethical considerations for deploying natural language processing models</p>
-          </div>
-          
-          <div class="grid-3">
-            <div class="ethics-card">
-              <h3>⚖️ 1. Bias</h3>
-              <p>Machine learning models inherit societal and textual biases present within training corpora. Regular audits are mandatory.</p>
-            </div>
-            
-            <div class="ethics-card">
-              <h3>📊 2. Data Quality</h3>
-              <p>Poor, noisy, or unbalanced training data can produce skewed confidence scores and unreliable real-world predictions.</p>
-            </div>
-            
-            <div class="ethics-card">
-              <h3>🔒 3. Privacy</h3>
-              <p>User input text should be processed securely without storing sensitive personal identifiable information (PII).</p>
-            </div>
-            
-            <div class="ethics-card">
-              <h3>👁️ 4. Transparency</h3>
-              <p>Users must be informed clearly that predictions are produced by probabilistic algorithms, not authoritative human decisions.</p>
-            </div>
-            
-            <div class="ethics-card">
-              <h3>🔍 5. Explainability</h3>
-              <p>Exposing feature importance weights empowers users to understand why an AI model arrived at a specific conclusion.</p>
-            </div>
-            
-            <div class="ethics-card">
-              <h3>🤝 6. Human Oversight</h3>
-              <p>AI predictions must serve as decision-support assistance, leaving final accountability with human decision-makers.</p>
-            </div>
-            
-            <div class="ethics-card" style="grid-column: span 1 / -1;">
-              <h3>⚠️ 7. Misuse</h3>
-              <p>Text classifiers should not be treated as infallible systems or misused for automated censorship without review.</p>
-            </div>
-          </div>
-        </section>
-        
-        <!-- Section 11: How It Works Section -->
-        <section id="how-it-works" class="section-block">
-          <div class="section-header">
-            <h2>⚙️ How It Works – System Architecture</h2>
-            <p>Click on any step below to explore the end-to-end NLP & ML processing pipeline</p>
-          </div>
-          
-          <div class="card">
-            <div class="accordion-item">
-              <div class="accordion-header">
-                <span>1. User Text Input</span>
-                <span>▼</span>
-              </div>
-              <div class="accordion-content">
-                The user inputs a natural language sentence (e.g. "I absolutely love this application!").
-              </div>
-            </div>
-            
-            <div class="accordion-item">
-              <div class="accordion-header">
-                <span>2. NLP Preprocessing</span>
-                <span>▼</span>
-              </div>
-              <div class="accordion-content">
-                The raw string is converted to lowercase, special characters and punctuation are removed.
-              </div>
-            </div>
-            
-            <div class="accordion-item">
-              <div class="accordion-header">
-                <span>3. Tokenization & Stemming</span>
-                <span>▼</span>
-              </div>
-              <div class="accordion-content">
-                Text is split into discrete word tokens. Common stop-words are filtered out, and Porter Stemmer normalizes words to root forms.
-              </div>
-            </div>
-            
-            <div class="accordion-item">
-              <div class="accordion-header">
-                <span>4. TF-IDF Feature Extraction</span>
-                <span>▼</span>
-              </div>
-              <div class="accordion-content">
-                Tokens are mapped into numerical sparse vectors based on Term Frequency (TF) and Inverse Document Frequency (IDF) relative to the training set.
-              </div>
-            </div>
-            
-            <div class="accordion-item">
-              <div class="accordion-header">
-                <span>5. Machine Learning Classifier</span>
-                <span>▼</span>
-              </div>
-              <div class="accordion-content">
-                The TF-IDF vector is fed into the selected classifier (Logistic Regression, Naive Bayes, or Linear SVM) to calculate decision scores.
-              </div>
-            </div>
-            
-            <div class="accordion-item">
-              <div class="accordion-header">
-                <span>6. Prediction & Confidence</span>
-                <span>▼</span>
-              </div>
-              <div class="accordion-content">
-                The highest probability class (Positive, Negative, or Neutral) is selected as the prediction output alongside the confidence score.
-              </div>
-            </div>
-            
-            <div class="accordion-item">
-              <div class="accordion-header">
-                <span>7. Explainable AI (XAI) Attribution</span>
-                <span>▼</span>
-              </div>
-              <div class="accordion-content">
-                Model weight parameters are extracted to identify positive and negative contributing words, highlighting their influence on the prediction.
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        <!-- Section 12: Model Information -->
-        <section id="model-info" class="section-block">
-          <div class="section-header">
-            <h2>ℹ️ Model Information & Dataset Statistics</h2>
-            <p>Actual system metrics generated dynamically from the underlying scikit-learn models</p>
-          </div>
-          
-          <div class="grid-3">
-            <div class="card">
-              <div class="card-title">Total Dataset Size</div>
-              <div style="font-size: 32px; font-weight: 800; color: var(--primary);">{{ model_info.total_dataset_samples }}</div>
-              <div style="font-size: 13px; color: var(--text-muted);">Labeled sentiment text samples</div>
-            </div>
-            
-            <div class="card">
-              <div class="card-title">Train / Test Split</div>
-              <div style="font-size: 28px; font-weight: 800; color: var(--text-main);">
-                {{ model_info.training_samples }} / {{ model_info.testing_samples }}
-              </div>
-              <div style="font-size: 13px; color: var(--text-muted);">80% Train &bull; 20% Stratified Test</div>
-            </div>
-            
-            <div class="card">
-              <div class="card-title">TF-IDF Vocabulary Size</div>
-              <div style="font-size: 32px; font-weight: 800; color: var(--success);">{{ model_info.num_tfidf_features }}</div>
-              <div style="font-size: 13px; color: var(--text-muted);">Extracted n-gram feature terms</div>
-            </div>
-          </div>
-        </section>
-        
-        <!-- Section 15: About Project -->
-        <section id="about-project" class="section-block">
-          <div class="section-header">
-            <h2>📖 About This Project</h2>
-          </div>
-          
-          <div class="card">
-            <p style="font-size: 15px; line-height: 1.8; color: var(--text-main);">
-              This mini AI application demonstrates Natural Language Processing, TF-IDF feature extraction, machine-learning classification, and Explainable AI. The application shows how raw human language can be processed and classified while providing users with an understandable explanation of the model's prediction.
-            </p>
-          </div>
-        </section>
-        
-      </main>
-    </div>
-  </div>
+        </header>
 
-  <script src="{{ url_for('static', filename='app.js') }}"></script>
+        <!-- Main Alert Banner (Visible when alert threshold is reached) -->
+        <div id="alertBanner" class="alert-banner hidden">
+            <div class="alert-content">
+                <div class="alert-icon">⚠️</div>
+                <div class="alert-text">
+                    <h3 id="alertBannerTitle">HIGH WATER LEVEL ALERT TRIGGERED</h3>
+                    <p id="alertBannerMessage">Water level reached 400 Ltrs (Threshold: 400 Ltrs)</p>
+                </div>
+            </div>
+            <div class="alert-actions">
+                <button id="btnMuteSound" class="btn btn-outline-light btn-sm">🔊 Mute Sound</button>
+                <button id="btnDismissAlert" class="btn btn-light btn-sm">Acknowledge</button>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Content Grid -->
+        <main class="dashboard-grid">
+            
+            <!-- LEFT PANEL: Visual Tank Graphic -->
+            <section class="panel tank-panel">
+                <div class="panel-header">
+                    <h2>Water Tank Visualization (800 Ltrs Total)</h2>
+                    <span class="capacity-tag">Capacity: 800L</span>
+                </div>
+
+                <div class="tank-wrapper">
+                    <!-- Inflow Pipe Simulation -->
+                    <div class="pipe-top">
+                        <div class="pipe-body"></div>
+                        <div id="inflowWaterStream" class="water-stream stream-top hidden"></div>
+                    </div>
+
+                    <!-- Main Tank Glass Body -->
+                    <div class="tank-container" id="tankContainer">
+                        
+                        <!-- Dynamic Threshold Alert Line (User set limit) -->
+                        <div class="threshold-line" id="thresholdLine" style="bottom: 50%;">
+                            <span class="threshold-label" id="thresholdLabel">ALERT LIMIT: 400L</span>
+                        </div>
+
+                        <!-- Division Level Markers (200, 400, 600, 800 Ltrs) -->
+                        <div class="division-markers">
+                            <!-- 800L Marker (100%) -->
+                            <div class="marker-line" style="bottom: 100%;">
+                                <div class="marker-tick"></div>
+                                <span class="marker-label">800L <small>(100%)</small></span>
+                            </div>
+                            <!-- 600L Marker (75%) -->
+                            <div class="marker-line" style="bottom: 75%;">
+                                <div class="marker-tick"></div>
+                                <span class="marker-label">600L <small>(75%)</small></span>
+                            </div>
+                            <!-- 400L Marker (50%) -->
+                            <div class="marker-line" style="bottom: 50%;">
+                                <div class="marker-tick"></div>
+                                <span class="marker-label">400L <small>(50%)</small></span>
+                            </div>
+                            <!-- 200L Marker (25%) -->
+                            <div class="marker-line" style="bottom: 25%;">
+                                <div class="marker-tick"></div>
+                                <span class="marker-label">200L <small>(25%)</small></span>
+                            </div>
+                            <!-- 0L Marker -->
+                            <div class="marker-line" style="bottom: 0%;">
+                                <div class="marker-tick"></div>
+                                <span class="marker-label">0L</span>
+                            </div>
+                        </div>
+
+                        <!-- Water Liquid Container -->
+                        <div class="liquid-body" id="liquidBody" style="height: 43.75%;">
+                            <!-- Animated Waves SVG -->
+                            <div class="wave-container">
+                                <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+                                    <defs>
+                                        <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+                                    </defs>
+                                    <g class="parallax">
+                                        <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(56, 189, 248, 0.4)" />
+                                        <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(14, 165, 233, 0.6)" />
+                                        <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(2, 132, 199, 0.8)" />
+                                        <use xlink:href="#gentle-wave" x="48" y="7" fill="var(--liquid-color, #0284c7)" />
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <!-- Live Volume Badge on Water Surface -->
+                            <div class="volume-badge" id="surfaceVolumeBadge">350.0 L</div>
+                        </div>
+
+                    </div>
+
+                    <!-- Outflow Pipe Simulation -->
+                    <div class="pipe-bottom">
+                        <div class="pipe-body"></div>
+                        <div id="outflowWaterStream" class="water-stream stream-bottom hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Division Status Bar below Tank -->
+                <div class="division-status-bar">
+                    <div class="div-node" id="node200">
+                        <span class="node-dot"></span>
+                        <span class="node-val">200L</span>
+                    </div>
+                    <div class="div-node" id="node400">
+                        <span class="node-dot"></span>
+                        <span class="node-val">400L</span>
+                    </div>
+                    <div class="div-node" id="node600">
+                        <span class="node-dot"></span>
+                        <span class="node-val">600L</span>
+                    </div>
+                    <div class="div-node" id="node800">
+                        <span class="node-dot"></span>
+                        <span class="node-val">800L</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT PANEL: Controls, Threshold Input, Metrics -->
+            <section class="panel controls-panel">
+                
+                <!-- System Status Summary Cards -->
+                <div class="metrics-grid">
+                    <div class="metric-card" id="cardCurrentLevel">
+                        <div class="metric-icon">💧</div>
+                        <div class="metric-info">
+                            <span class="metric-title">Current Level</span>
+                            <div class="metric-value"><span id="metricLevel">350.0</span> <small>Ltrs</small></div>
+                            <span class="metric-sub" id="metricPercent">43.8% Full</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card" id="cardAlertLimit">
+                        <div class="metric-icon">🔔</div>
+                        <div class="metric-info">
+                            <span class="metric-title">Alert Threshold</span>
+                            <div class="metric-value"><span id="metricLimit">400.0</span> <small>Ltrs</small></div>
+                            <span class="metric-sub" id="metricLimitSub">Alert triggers at 400L</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card" id="cardState">
+                        <div class="metric-icon" id="stateIcon">🛡️</div>
+                        <div class="metric-info">
+                            <span class="metric-title">System Status</span>
+                            <div class="metric-value text-success" id="stateText">SAFE</div>
+                            <span class="metric-sub" id="stateSub">Normal Operation</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DYNAMIC ALERT LIMIT USER INPUT SETTING -->
+                <div class="control-card highlight-card">
+                    <div class="card-header">
+                        <h3>🎯 Configure Alert Threshold</h3>
+                        <span class="badge badge-info">Dynamic Input</span>
+                    </div>
+                    <p class="card-desc">Set custom water limit (e.g. type <strong>200</strong> to get alert at 200L, or keep default <strong>400</strong>L):</p>
+                    
+                    <form id="limitForm" class="input-form">
+                        <div class="input-group">
+                            <input type="number" id="inputAlertLimit" min="1" max="800" value="400" step="10" placeholder="Enter limit in Ltrs (e.g. 200)" required>
+                            <span class="unit-addon">Ltrs</span>
+                            <button type="submit" class="btn btn-primary">Set Alert Limit</button>
+                        </div>
+                    </form>
+
+                    <!-- Quick Preset Buttons for Division Markers -->
+                    <div class="preset-group">
+                        <span class="preset-label">Quick Threshold Presets:</span>
+                        <div class="btn-grid">
+                            <button type="button" class="btn btn-preset" data-limit="200">Set 200L Limit</button>
+                            <button type="button" class="btn btn-preset active" data-limit="400">Set 400L Limit</button>
+                            <button type="button" class="btn btn-preset" data-limit="600">Set 600L Limit</button>
+                            <button type="button" class="btn btn-preset" data-limit="800">Set 800L Limit</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WATER LEVEL MANUAL CONTROL & SLIDER -->
+                <div class="control-card">
+                    <div class="card-header">
+                        <h3>🎛️ Manual Water Level Control</h3>
+                    </div>
+                    <p class="card-desc">Drag slider or pick a division level to simulate water quantity directly:</p>
+
+                    <div class="slider-container">
+                        <input type="range" id="levelSlider" min="0" max="800" value="350" step="10" class="range-slider">
+                        <div class="slider-marks">
+                            <span>0L</span>
+                            <span>200L</span>
+                            <span>400L</span>
+                            <span>600L</span>
+                            <span>800L</span>
+                        </div>
+                    </div>
+
+                    <div class="preset-group">
+                        <span class="preset-label">Set Water Directly to Division:</span>
+                        <div class="btn-grid">
+                            <button type="button" class="btn btn-level" data-level="0">0 L</button>
+                            <button type="button" class="btn btn-level" data-level="200">200 L</button>
+                            <button type="button" class="btn btn-level" data-level="400">400 L</button>
+                            <button type="button" class="btn btn-level" data-level="600">600 L</button>
+                            <button type="button" class="btn btn-level" data-level="800">800 L</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AUTOMATED PUMP SIMULATOR CONTROLS -->
+                <div class="control-card">
+                    <div class="card-header">
+                        <h3>⚡ Automated Pump Simulation</h3>
+                    </div>
+                    <p class="card-desc">Simulate live water inflow or outflow to test automated alert triggering:</p>
+
+                    <div class="pump-controls">
+                        <button id="btnInflow" class="btn btn-success btn-lg">
+                            <span class="btn-icon">🚰</span> Fill Tank (Inflow)
+                        </button>
+                        <button id="btnOutflow" class="btn btn-warning btn-lg">
+                            <span class="btn-icon">🌊</span> Drain Tank (Outflow)
+                        </button>
+                        <button id="btnStopPumps" class="btn btn-danger btn-lg">
+                            <span class="btn-icon">⏹️</span> Stop Pumps
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Audio Beep sound generator script via Web Audio API -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
